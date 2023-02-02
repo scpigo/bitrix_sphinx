@@ -1,0 +1,42 @@
+version: '3.5'
+
+services:
+  php:
+    build:
+      context: ./docker/php
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 8080:80
+
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=bitrix
+      - MYSQL_USER=bitrix
+      - MYSQL_PASSWORD=secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./backend/docker/database/data:/var/lib/mysql"
+      - "./backend/docker/database:/docker-entrypoint-initdb.d/:rw"
+
+  adminer:
+    image: adminer
+    ports:
+      - "${ADMINER_PORT}:8080"
+
+  sphinx:
+    build:
+      context: ./docker/sphinx
+    ports:
+      - "127.0.0.1:9306:9306"
+    volumes:
+      - ./docker/sphinx/log/searchd.log:/var/log/sphinxsearch/searchd.log
+      - ./docker/sphinx/log/query.log:/var/log/sphinxsearch/query.log
+      - ./docker/sphinx/pid/searchd.pid:/var/run/sphinxsearch/searchd.pid
+      - ./docker/sphinx/data:/var/lib/sphinxsearch/data
+      - ./docker/sphinx/dicts:/etc/sphinxsearch/dicts
+    depends_on:
+      - php
