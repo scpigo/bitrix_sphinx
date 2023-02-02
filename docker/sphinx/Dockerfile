@@ -11,7 +11,9 @@ RUN apt-get install -y --force-yes \
     libpq5 \
     libexpat1-dev
 
-ADD install /usr/local/sphinxinstall
+COPY sphinx-2.2.11-release.tar.gz /usr/local/sphinx-2.2.11-release.tar.gz
+
+RUN mkdir /usr/local/sphinxinstall && tar xzvf /usr/local/sphinx-2.2.11-release.tar.gz -C /usr/local/sphinxinstall --strip-components 1
 
 WORKDIR /usr/local/sphinxinstall
 
